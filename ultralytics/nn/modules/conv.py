@@ -10,6 +10,7 @@ import torch.nn as nn
 __all__ = (
     "Conv",
     "Conv2",
+    "FourierFeature",
     "LightConv",
     "DWConv",
     "DWConvTranspose2d",
@@ -52,6 +53,31 @@ class Conv(nn.Module):
     def forward_fuse(self, x):
         """Perform transposed convolution of 2D data."""
         return self.act(self.conv(x))
+
+
+class FourierFeature(nn.Module):
+    def __init__(self, c1, c2, k=1, s=1, p=None, g=1, d=1,
+                 sigma=0.001, n_features=128):
+        """Initialize Conv layer with given arguments including activation."""
+        super().__init__()
+        self.conv = nn.Conv2d(c1, n_features // 2, 1, 1,
+                              groups=1, dilation=1, bias=False)
+        self.sigma = sigma
+        self.conv.weight = nn.Parameter(torch.randn_like(self.conv.weight.data) * sigma)
+        self.proj = nn.Conv2d(n_features + c1, c2, k, s, autopad(k, p, d),
+                              groups=g, dilation=d, bias=False)
+
+    def forward(self, x):
+        """Apply convolution, batch normalization and activation to input tensor."""
+        t = 2 * torch.pi * self.conv(x).detach()
+        x = torch.concatenate([torch.sin(t), torch.cos(t), x], dim=-3)
+        y = self.proj(x)
+        return y
+
+    def forward_fuse(self, x):
+        """Perform transposed convolution of 2D data."""
+        return self.forward(x)
+
 
 
 class Conv2(Conv):

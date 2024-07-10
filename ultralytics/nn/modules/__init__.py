@@ -56,6 +56,7 @@ from .block import (
 )
 from .conv import (
     CBAM,
+    FourierFeature,
     ChannelAttention,
     Concat,
     Conv,
@@ -86,6 +87,7 @@ from .transformer import (
 __all__ = (
     "Conv",
     "Conv2",
+    "FourierFeature",
     "LightConv",
     "RepConv",
     "DWConv",
