@@ -57,7 +57,7 @@ class Conv(nn.Module):
 
 class FourierFeature(nn.Module):
     def __init__(self, c1, c2, k=1, s=1, p=None, g=1, d=1,
-                 sigma=0.001, n_features=128):
+                 sigma=0.03, n_features=128):
         """Initialize Conv layer with given arguments including activation."""
         super().__init__()
         self.conv = nn.Conv2d(c1, n_features // 2, 1, 1,
@@ -69,7 +69,7 @@ class FourierFeature(nn.Module):
 
     def forward(self, x):
         """Apply convolution, batch normalization and activation to input tensor."""
-        t = 2 * torch.pi * self.conv(x).detach()
+        t = 2 * torch.pi * self.conv(x) # .detach()
         x = torch.concatenate([torch.sin(t), torch.cos(t), x], dim=-3)
         y = self.proj(x)
         return y
