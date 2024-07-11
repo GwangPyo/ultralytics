@@ -759,7 +759,7 @@ class BaseTrainer:
             optimizer = optim.SGD(g[2], lr=lr, momentum=momentum, nesterov=True)
         elif name == 'Adabelief':
             from adabelief_pytorch import AdaBelief
-            optimizer = AdaBelief(g[2], lr=lr, momentum=(momentum, 0.999), )
+            optimizer = AdaBelief(g[2], lr=lr,  )
 
         else:
             raise NotImplementedError(
