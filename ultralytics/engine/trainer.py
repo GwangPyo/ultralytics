@@ -20,7 +20,6 @@ import numpy as np
 import torch
 from torch import distributed as dist
 from torch import nn, optim
-
 from ultralytics.cfg import get_cfg, get_save_dir
 from ultralytics.data.utils import check_cls_dataset, check_det_dataset
 from ultralytics.nn.tasks import attempt_load_one_weight, attempt_load_weights
@@ -758,6 +757,10 @@ class BaseTrainer:
             optimizer = optim.RMSprop(g[2], lr=lr, momentum=momentum)
         elif name == "SGD":
             optimizer = optim.SGD(g[2], lr=lr, momentum=momentum, nesterov=True)
+        elif name == 'Adabelief':
+            from adabelief_pytorch import AdaBelief
+            optimizer = AdaBelief(g[2], lr=lr, momentum=(momentum, 0.999), )
+
         else:
             raise NotImplementedError(
                 f"Optimizer '{name}' not found in list of available optimizers "
